@@ -15,21 +15,20 @@
     $.ajax({
         url:ajaxhost+'/ssm/user/findApply',
         data:{openId:openId},
-        type:'get',
+        type:'post',
         success:function(data){
-						data = JSON.parse(data);
-						if(data.code==200){
+						if(data.code==0){
 							var html = '';
-							for(var i=0;i<data.data.length;i++){
-								var status = (data.data[i].status==0&&"待审核")||(data.data[i].status==1&&"审核通过")||(data.data[i].status==2&&"审核失败");
-								var isHide = data.data[i].status==2?"":"hide";
-								var reason = data.data[i].reason?data.data[i].reason:'';
+							for(var i=0;i<data.message.length;i++){
+								var status = (data.message[i].status==0&&"待审核")||(data.message[i].status==1&&"审核通过")||(data.message[i].status==2&&"审核失败");
+								var isHide = data.message[i].status==2?"":"hide";
+								var reason = data.message[i].reason?data.message[i].reason:'';
 								html+='<li class="loan-item">'+
 												'<div class="weui-form-preview">'+
 														'<div class="weui-form-preview__bd">'+
 																'<div class="weui-form-preview__item">'+
 																		'<label class="weui-form-preview__label">借款金额</label>'+
-																		'<span class="weui-form-preview__value">￥'+data.data[i].money+'</span>'+
+																		'<span class="weui-form-preview__value">￥'+data.message[i].money+'</span>'+
 																'</div>'+
 																'<div class="weui-form-preview__item">'+
 																		'<label class="weui-form-preview__label">借款状态</label>'+

@@ -84,13 +84,12 @@
         data:{openId:openId},
         type:'get',
         success:function(res){
-            var data = JSON.parse(res);
-            if(data.code==200){
+            if(data.code==0){
                 var html = '';
-                for(var i=0;i<data.data.length;i++){
-                    var status = (data.data[i].recStatus==0&&'待审核')||(data.data[i].recStatus==1&&'审核通过')||(data.data[i].recStatus==2&&'审核失败');
+                for(var i=0;i<data.message.length;i++){
+                    var status = (data.message[i].recStatus==0&&'待审核')||(data.message[i].recStatus==1&&'审核通过')||(data.message[i].recStatus==2&&'审核失败');
                     var cal = 'hide';
-                    if(data.data[i].recStatus==2){
+                    if(data.message[i].recStatus==2){
                         cal = '';
                     }
                     html+= '<li class="loan-item">'+
@@ -98,11 +97,11 @@
                                     '<div class="weui-form-preview__bd">'+
                                         '<div class="weui-form-preview__item">'+
                                             '<label class="weui-form-preview__label">被推荐姓名</label>'+
-                                            '<span class="weui-form-preview__value">'+data.data[i].recName+'</span>'+
+                                            '<span class="weui-form-preview__value">'+data.message[i].recName+'</span>'+
                                         '</div>'+
                                         '<div class="weui-form-preview__item">'+
                                             '<label class="weui-form-preview__label">被推荐人手机号</label>'+
-                                            '<span class="weui-form-preview__value">'+data.data[i].recPhone+'</span>'+
+                                            '<span class="weui-form-preview__value">'+data.message[i].recPhone+'</span>'+
                                         '</div>'+
                                         '<div class="weui-form-preview__item">'+
                                             '<label class="weui-form-preview__label">推荐状态</label>'+
@@ -110,7 +109,7 @@
                                         '</div>'+
                                         '<div class="weui-form-preview__item reason '+cal+'">'+
                                             '<label class="weui-form-preview__label">审核失败原因</label>'+
-                                            '<span class="weui-form-preview__value">'+data.data[i].reason+'</span>'+
+                                            '<span class="weui-form-preview__value">'+data.message[i].reason+'</span>'+
                                         '</div>'+
                                     '</div>'+
                                 '</div>'+

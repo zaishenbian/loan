@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressLayouts = require('express-ejs-layouts');
+var mongoose = require('mongoose');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -25,6 +26,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressLayouts);
 app.set('layout','layout');
+
+mongoose.connect('mongodb://localhost:27017/loan', function(err){
+  if(err){
+    console.log('数据库连接失败！');
+  }else{
+    console.log('数据库连接成功！');
+  }
+});
 
 app.use('/ssm', users);
 app.use('/api',api);

@@ -19,7 +19,7 @@ $.fn.serializeJson = function() {
     return serializeObj;
 };
 //请求地址
-var ajaxhost = "http://192.168.19.71:8080"
+var ajaxhost = "http://localhost:3000"
 //获取url的参数
 function getQueryString(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");

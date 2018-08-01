@@ -213,7 +213,7 @@
       return;
     }  
     var data=new FormData();
-    data.append("fileName",fileInput.files[0]);
+    data.append("image",fileInput.files[0]);
     data.img = true;    //图片上传时需要添加img:true的参数
     self.addClass('uploading');
     $.ajax({
@@ -225,10 +225,9 @@
       success:function(res){
         self.removeClass('uploading').addClass('hasload');
         var prop = self.attr('name');
-        res = JSON.parse(res);
         console.log(res)
-        if(res.code==200){
-          var imgUrl = ajaxhost+'/ssm/'+res.msg;
+        if(res.code==0){
+          var imgUrl = ajaxhost+res.message;
           submitData[prop] = imgUrl;
           imgDom.attr('src',imgUrl);
         }else{
@@ -254,11 +253,10 @@
       data:submitData,
       type:'post',
       success:function(data){
-        data = JSON.parse(data);
-        if(data.code==200){
+        if(data.code==0){
           $.alert("提交成功","温馨提示");
         }else{
-          $.alert(data.msg,"温馨提示");
+          $.alert(data.message,"温馨提示");
         }
       }
     })

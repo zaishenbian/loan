@@ -90,11 +90,10 @@
         data:submitData,
         type:'post',
         success:function(data){
-          data = JSON.parse(data);
-          if(data.code==200){
-            $.alert('提交成功','温馨提示');
+          if(data.code==0){
+            $.alert(data.message,'温馨提示');
           }else{
-            $.alert(data.msg,'温馨提示');
+            $.alert(data.message,'温馨提示');
           }
         }
       })
