@@ -1,0 +1,125 @@
+<%- contentFor('style') %>
+<title>我的推荐</title>
+<style>
+    .hide{
+        display: none;
+    }
+</style>
+
+<%- contentFor('content') %>
+<ul class="loan-list">
+    <li class="loan-item">
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">被推荐姓名</label>
+                    <span class="weui-form-preview__value">007</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">被推荐人手机号</label>
+                    <span class="weui-form-preview__value">18301010101</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">推荐状态</label>
+                    <span class="weui-form-preview__value">审核失败</span>
+                </div>
+                <div class="weui-form-preview__item reason">
+                    <label class="weui-form-preview__label">审核失败原因</label>
+                    <span class="weui-form-preview__value">很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字</span>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li class="loan-item">
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">被推荐姓名</label>
+                    <span class="weui-form-preview__value">007</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">被推荐人手机号</label>
+                    <span class="weui-form-preview__value">18301010101</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">推荐状态</label>
+                    <span class="weui-form-preview__value">审核失败</span>
+                </div>
+                <div class="weui-form-preview__item reason">
+                    <label class="weui-form-preview__label">审核失败原因</label>
+                    <span class="weui-form-preview__value">很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字</span>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li class="loan-item">
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">被推荐姓名</label>
+                    <span class="weui-form-preview__value">007</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">被推荐人手机号</label>
+                    <span class="weui-form-preview__value">18301010101</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">推荐状态</label>
+                    <span class="weui-form-preview__value">审核失败</span>
+                </div>
+                <div class="weui-form-preview__item reason">
+                    <label class="weui-form-preview__label">审核失败原因</label>
+                    <span class="weui-form-preview__value">很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字</span>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+<%- contentFor('script') %>
+<script>
+    var openId = getQueryString('openId');
+    //获取贷款信息
+    $.ajax({
+        url:ajaxhost+'/ssm/user/findRec',
+        data:{openId:openId},
+        type:'get',
+        success:function(res){
+            var data = JSON.parse(res);
+            if(data.code==200){
+                var html = '';
+                for(var i=0;i<data.data.length;i++){
+                    var status = (data.data[i].recStatus==0&&'待审核')||(data.data[i].recStatus==1&&'审核通过')||(data.data[i].recStatus==2&&'审核失败');
+                    var cal = 'hide';
+                    if(data.data[i].recStatus==2){
+                        cal = '';
+                    }
+                    html+= '<li class="loan-item">'+
+                                '<div class="weui-form-preview">'+
+                                    '<div class="weui-form-preview__bd">'+
+                                        '<div class="weui-form-preview__item">'+
+                                            '<label class="weui-form-preview__label">被推荐姓名</label>'+
+                                            '<span class="weui-form-preview__value">'+data.data[i].recName+'</span>'+
+                                        '</div>'+
+                                        '<div class="weui-form-preview__item">'+
+                                            '<label class="weui-form-preview__label">被推荐人手机号</label>'+
+                                            '<span class="weui-form-preview__value">'+data.data[i].recPhone+'</span>'+
+                                        '</div>'+
+                                        '<div class="weui-form-preview__item">'+
+                                            '<label class="weui-form-preview__label">推荐状态</label>'+
+                                            '<span class="weui-form-preview__value">'+status+'</span>'+
+                                        '</div>'+
+                                        '<div class="weui-form-preview__item reason '+cal+'">'+
+                                            '<label class="weui-form-preview__label">审核失败原因</label>'+
+                                            '<span class="weui-form-preview__value">'+data.data[i].reason+'</span>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</li>';
+                }
+                $('.loan-list').html(html);
+            }else{
+                $.alert("获取信息失败,请刷新页面重试","温馨提示");
+            }
+        }
+    })
+</script>

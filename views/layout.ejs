@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- 加载公共的meta部分 -->
+    <% include ./public/meta %>
+    <%- defineContent('style') %>
+  </head>
+  <body>
+    <%- defineContent('content') %>
+  </body>
+  <!-- 加载公共的js -->
+  <% include ./public/global-js %>
+  <%- defineContent('script') %>
+</html>

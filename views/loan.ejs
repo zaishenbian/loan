@@ -1,0 +1,266 @@
+<%- contentFor('style') %>
+<title>我要贷款</title>
+<style>
+  .weui-label{
+    width: 140px;
+  }
+  .weui-cell{
+    padding: 20px 10px;
+  }
+  .weui-select{
+    padding: 0;
+  }
+  .next-btn,.submit{
+    margin-top: 50px;
+  }
+  .stage2{
+    display: none;
+  }
+  .uploadImg{
+    padding: 20px;
+    text-align: center;
+  }
+  .uploadImg .img{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    border: 1px dashed #666;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .uploadImg .addImg{
+    font-size: 50px;
+    color: #666;
+  }
+  .uploadImg img,.uploadImg .weui-loadmore{
+    display: none;
+  }
+  .uploadImg.uploading .weui-loadmore{
+    display: block;
+  }
+  .uploadImg.uploading img,.uploadImg.uploading .addImg{
+    display: none;
+  }
+  .uploadImg.hasload img{
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .uploadImg.hasload .weui-loadmore,.uploadImg.hasload .addImg{
+    display: none;
+  }
+</style>
+
+<%- contentFor('content') %>
+<form id="loanForm">
+  <div class="stage1">
+    <div class="weui-cells weui-cells_form">
+      <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">借款金额(必填)</label></div>
+        <div class="weui-cell__bd">
+          <input class="weui-input" type="number" required name="money" pattern="[0-9]+" tip="借款金额" placeholder="请输入借款金额">
+        </div>
+      </div>
+      <div class="weui-cell" style="height:26px;">
+        <div class="weui-cell__hd"><label class="weui-label">分期数(必填)</label></div>
+        <div class="weui-cell__bd">
+          <select class="weui-select" name="term">
+            <option value="3">3期</option>
+            <option value="6">6期</option>
+            <option value="12">12期</option>
+            <option value="24">24期</option>
+          </select>
+        </div>
+      </div>
+      <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">姓名(必填)</label></div>
+        <div class="weui-cell__bd">
+          <input class="weui-input" type="text" required name="userName" pattern="[\u4e00-\u9fa5]+" tip="姓名" placeholder="请输入姓名">
+        </div>
+      </div>
+      <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">手机号(必填)</label></div>
+        <div class="weui-cell__bd">
+          <input class="weui-input" type="number" required name="userPhone" pattern="^1[3|4|5|7|8]\d{9}$" tip="手机号" placeholder="请输入手机号">
+        </div>
+      </div>
+      <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">推荐人姓名</label></div>
+        <div class="weui-cell__bd">
+          <input class="weui-input" type="text" name="refereeName" pattern="" tip="推荐人姓名" placeholder="请输入推荐人姓名">
+        </div>
+      </div>
+      <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">推荐人手机号</label></div>
+        <div class="weui-cell__bd">
+          <input class="weui-input" type="number" name="refereePhone" pattern="" tip="推荐人手机号" placeholder="请输入推荐人手机号">
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px;">
+        <a href="javascript:;" class="weui-btn weui-btn_primary next-btn">下一步</a>	
+    </div>
+  </div>
+  <div class="stage2">
+    <!-- 上传身份证正面 -->
+    <div class="IdCardFront uploadImg" name="imagePositive">
+      <div class="img">
+        <img src="" />
+        <div class="weui-loadmore">
+          <i class="weui-loading"></i>
+          <span class="weui-loadmore__tips">正在上传</span>
+        </div>
+        <span class="addImg">+</span>
+      </div>
+      <p>上传身份证正面</p>
+    </div>
+    <!-- 上传身份证背面 -->
+    <div class="IdCardFront uploadImg" name="imageReverse">
+      <div class="img">
+        <img src="" />
+        <div class="weui-loadmore">
+          <i class="weui-loading"></i>
+          <span class="weui-loadmore__tips">正在上传</span>
+        </div>
+        <span class="addImg">+</span>
+      </div>
+      <p>上传身份证背面</p>
+    </div>
+    <!-- 上传手持身份证照片 -->
+    <div class="IdCardFront uploadImg" name="imageTogether">
+      <div class="img">
+        <img src="" />
+        <div class="weui-loadmore">
+          <i class="weui-loading"></i>
+          <span class="weui-loadmore__tips">正在上传</span>
+        </div>
+        <span class="addImg">+</span>
+      </div>
+      <p>上传手持身份证照片</p>
+    </div>
+    <div style="padding:10px;">
+        <a href="javascript:;" class="weui-btn weui-btn_primary submit">提交</a>	
+    </div>
+  </div>
+</form>
+
+<%- contentFor('script') %>
+<script>
+  var stage1 = $('.stage1');
+  var stage2 = $('.stage2');
+  var loanForm = $('#loanForm');
+  var submitData = {};
+  //表单提交
+  $('.next-btn').click(function(){
+    //表单验证
+    var inp = $('#loanForm input');
+    var verifyBtn = false;
+    inp.each(function(index,item){
+      var val = $(item).val();
+      var required = $(item).attr('required');
+      var reg = new RegExp($(item).attr('pattern'),'g');
+      var tip = $(item).attr('tip');
+      if(val==''&&required){
+        $.alert("必填项不能为空","温馨提示",function(){
+          $(item).focus();
+        });
+        verifyBtn = true;
+        return false;
+      }
+      if(!reg.test(val)){
+        $.alert("请输入正确的"+tip,"温馨提示",function(){
+          $(item).focus();
+        });
+        verifyBtn = true;
+        return false;
+      }
+    })
+    if(!verifyBtn){
+      stage1.hide();
+      stage2.show();
+      submitData = loanForm.serializeJson();
+    }
+  })
+  //图片上传
+  var uploadImgUrl = ajaxhost+'/ssm/user/upload';
+  var uploadImg = $('.uploadImg');
+  // 允许上传的图片类型  
+  var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];  
+  uploadImg.on('click',function(){
+    var _this = $(this);
+    if(_this.hasClass('uploading')) return;
+    /*内存创建input file*/  
+    var input=document.createElement('input');  
+    input.type='file';  
+    input.name='filename'; 
+    input.accept=allowTypes.join(',');
+    input.enctype='multipart/form-data';  
+    $(input).on('change',{dom:_this},onFileChange);  
+    input.click(); 
+  })
+  /*选择上传图片切换*/  
+  function onFileChange(e){
+    var self=e.data.dom;  
+    var fileInput=e.target;
+    var imgDom = self.find('img');  
+    if(fileInput.files.length==0){  
+      return;  
+    }
+    if(fileInput.files[0].size>1024*1024*2){  
+      $.alert("图片不能超过2M！", "温馨提示"); 
+      return;
+    }  
+    var data=new FormData();
+    data.append("fileName",fileInput.files[0]);
+    data.img = true;    //图片上传时需要添加img:true的参数
+    self.addClass('uploading');
+    $.ajax({
+      url:uploadImgUrl,
+      data:data,
+      type:'post',
+      contentType:false,
+      processData:false,
+      success:function(res){
+        self.removeClass('uploading').addClass('hasload');
+        var prop = self.attr('name');
+        res = JSON.parse(res);
+        console.log(res)
+        if(res.code==200){
+          var imgUrl = ajaxhost+'/ssm/'+res.msg;
+          submitData[prop] = imgUrl;
+          imgDom.attr('src',imgUrl);
+        }else{
+          $.alert("图片上传失败，请重试","温馨提示");
+        }
+      },
+      error:function(err){
+        self.removeClass('uploading');
+        $.alert("图片上传失败", "温馨提示"); 
+      }
+    })
+  }
+  //提交贷款
+  $('.submit').on('click',function(){
+    var openId = getQueryString('openId');
+    if(!submitData.imagePositive||!submitData.imageReverse||!submitData.imageTogether){
+      $.alert('请上传身份证照片信息');
+      return;
+    }
+    submitData.openId = openId;
+    $.ajax({
+      url:'/ssm/user/insertInfo',
+      data:submitData,
+      type:'post',
+      success:function(data){
+        data = JSON.parse(data);
+        if(data.code==200){
+          $.alert("提交成功","温馨提示");
+        }else{
+          $.alert(data.msg,"温馨提示");
+        }
+      }
+    })
+  })
+</script>

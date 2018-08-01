@@ -1,0 +1,107 @@
+<%- contentFor('style') %>
+<title>问题反馈</title>
+<style>
+  .weui-label{
+    width: 140px;
+  }
+  .weui-cell{
+    padding: 20px 10px;
+  }
+  .weui-select{
+    padding: 0;
+  }
+  .submit{
+    margin-top: 50px;
+  }
+</style>
+
+<%- contentFor('content') %>
+<form id="feedback">
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">反馈人姓名</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" required name="userName" tip="姓名" pattern="[\u4e00-\u9fa5]+" placeholder="请输入姓名">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">反馈人手机号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="number" required name="userPhone" tip="手机号" pattern="^1[3|4|5|7|8]\d{9}$" placeholder="请输入手机号">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">反馈内容</label></div>
+            <div class="weui-cell__bd feedback-content">
+                <textarea class="weui-textarea" required name="feedbackInfo" placeholder="请输入文本" rows="3" pattern=""></textarea>
+                <div class="weui-textarea-counter"><span class="text-num">0</span>/200</div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:10px;">
+        <a href="javascript:;" class="weui-btn weui-btn_primary submit">提交</a>	
+    </div>
+</form>
+
+<%- contentFor('script') %>
+<script>
+    var feedback = $('#feedback');
+    var textarea = $('.feedback-content');
+    var textNum = $('.text-num');
+    var submitData = {};
+    //限制问题反馈字数
+    textarea.on('input propertychange','textarea',function(){
+        var val = $(this).val();
+        if(val.length<201){
+            textNum.html(val.length);
+        }else{
+            textarea.find('textarea').val(val.substring(0,200));
+        }
+    });
+    //表单提交
+    $('.submit').click(function(){
+        var openId = getQueryString('openId');
+        //表单验证
+        var inp = $('#feedback input,#feedback textarea');
+        var verifyBtn = false;
+        inp.each(function(index,item){
+        var val = $(item).val();
+        var required = $(item).attr('required');
+        var reg = new RegExp($(item).attr('pattern'),'g');
+        var tip = $(item).attr('tip');
+        if(val==''&&required){
+            $.alert("必填项不能为空","温馨提示",function(){
+            $(item).focus();
+            });
+            verifyBtn = true;
+            return false;
+        }
+        if(!reg.test(val)){
+            $.alert("请输入正确的"+tip,"温馨提示",function(){
+            $(item).focus();
+            });
+            verifyBtn = true;
+            return false;
+        }
+        })
+        if(!verifyBtn){
+            submitData = feedback.serializeJson();
+            submitData.openId = openId;
+            $.ajax({
+                url:ajaxhost+'/ssm/user/insertFed',
+                data:submitData,
+                type:'post',
+                success:function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.code==200){
+                        $.alert('提交成功','温馨提示');
+                    }else{
+                        $.alert(data,'温馨提示');
+                    }
+                }
+            })
+            console.log(submitData)
+        }
+    })
+    </script>
