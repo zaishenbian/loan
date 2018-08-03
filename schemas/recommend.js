@@ -11,7 +11,11 @@ var recommendSchemas = new Schemas({
     //借款金额
     money: String,
     //分期数
-    term: String
+    term: String,
+    //审核状态
+    recStatus: Number,
+    //审核失败原因
+    reason: String
 });
 
 module.exports = recommendSchemas;

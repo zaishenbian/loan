@@ -22,8 +22,8 @@ router.use(function(req, res, next){
 //推荐接口
 router.post('/user/insertRec', function(req, res, next){
   //初始化推荐审核状态
-  req.recStatus = 0;
-  req.reason = '';
+  req.body.recStatus = 0;
+  req.body.reason = '';
   var recommend = new recommendModel(req.body);
   recommend.save(function(err, doc){
     if(err){
@@ -101,5 +101,18 @@ router.post('/user/findApply', function(req, res, next){
 });
 
 //我的推荐接口
+router.post('/user/findRec', function(req, res, next){
+  var openId = req.body.openId;
+  recommendModel.find({openId: openId}, function(err, doc){
+    if(err){
+      responseData.code = 1;
+      responseData.message = '信息查询失败，请重试！';
+      res.send(responseData);
+    }else{
+      responseData.message = doc;
+      res.send(responseData);
+    }
+  })
+})
 
 module.exports = router;
