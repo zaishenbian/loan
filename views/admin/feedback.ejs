@@ -1,0 +1,58 @@
+<%- contentFor('style') %>
+<style>
+  body{
+    padding: 20px 30px;
+  }
+</style>
+
+<%- contentFor('content') %>
+<table id="feedback" lay-filter="feedbackTable"></table>
+
+<script type="text/html" id="toolbar">
+  <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete" style="height:28px;line-height:28px;">删除</a>
+</script>
+
+<%- contentFor('script') %>
+<script>
+  layui.use('table', function(){
+    var table = layui.table;
+    var $ = layui.$;
+    
+    //表格初始化
+    var tableIns = table.render({
+      elem: '#feedback'
+      ,method: 'post'
+      ,height: 315
+      ,url: '/adminApi/feedbackTable' //数据接口
+      ,page: true //开启分页
+      ,limit: 10
+      ,cols: [[ //表头
+        {field: '_id', title: 'ID', width:220}
+        ,{field: 'userName', title: '姓名', width:100}
+        ,{field: 'userPhone', title: '电话', width:140}
+        ,{field: 'feedbackInfo', title: '反馈内容', width:420} 
+        ,{title: '操作', fixed: 'right', width:200, align:'center', toolbar: '#toolbar'}
+      ]]
+    }); 
+
+    //监听表格操作
+    table.on('tool(feedbackTable)', function(obj){
+      var data = obj.data;
+      var layEvent = obj.event;
+      var tr = obj.tr;
+
+      if(layEvent == 'delete'){
+        layer.confirm('真的删除么?', function(index){
+          obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+          layer.close(index);
+          //向服务端发送删除指令
+          tableIns.reload({
+            url: '/adminApi/deleteFeedback',
+            method: 'post',
+            where: data
+          });
+        });
+      }
+    });
+  });
+</script>

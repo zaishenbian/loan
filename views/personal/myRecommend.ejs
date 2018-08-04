@@ -22,9 +22,9 @@
             if(data.code==0){
                 var html = '';
                 for(var i=0;i<data.message.length;i++){
-                    var status = (data.message[i].recStatus==0&&'待审核')||(data.message[i].recStatus==1&&'审核通过')||(data.message[i].recStatus==2&&'审核失败');
+                    var status = (data.message[i].recStatus==0&&'待审核')||(data.message[i].recStatus==2&&'审核通过')||(data.message[i].recStatus==1&&'审核失败');
                     var cal = 'hide';
-                    if(data.message[i].recStatus==2){
+                    if(data.message[i].recStatus==1){
                         cal = '';
                     }
                     html+= '<li class="loan-item">'+

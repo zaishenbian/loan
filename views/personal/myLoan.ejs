@@ -20,8 +20,8 @@
 						if(data.code==0){
 							var html = '';
 							for(var i=0;i<data.message.length;i++){
-								var status = (data.message[i].status==0&&"待审核")||(data.message[i].status==1&&"审核通过")||(data.message[i].status==2&&"审核失败");
-								var isHide = data.message[i].status==2?"":"hide";
+								var status = (data.message[i].status==0&&"待审核")||(data.message[i].status==2&&"审核通过")||(data.message[i].status==1&&"审核失败");
+								var isHide = data.message[i].status==1?"":"hide";
 								var reason = data.message[i].reason?data.message[i].reason:'';
 								html+='<li class="loan-item">'+
 												'<div class="weui-form-preview">'+

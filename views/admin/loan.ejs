@@ -1,0 +1,69 @@
+<%- contentFor('style') %>
+<style>
+  body{
+    padding: 20px 30px;
+  }
+</style>
+
+<%- contentFor('content') %>
+<table id="loan" lay-filter="loanTable"></table>
+
+<script type="text/html" id="toolbar">
+  <a class="layui-btn layui-btn-sm" lay-event="check" style="height:28px;line-height:28px;">审核</a>
+  <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete" style="height:28px;line-height:28px;">删除</a>
+</script>
+
+<script type="text/html" id="statusTpl">
+  <div class="layui-table-cell laytable-cell-1-status">{{d.status==0?'待审核':(d.status==1?'审核失败':'审核成功')}}</div>
+</script>
+
+<%- contentFor('script') %>
+<script>
+  layui.use('table', function(){
+    var table = layui.table;
+    var $ = layui.$;
+    
+    //表格初始化
+    var tableIns = table.render({
+      elem: '#loan'
+      ,method: 'post'
+      ,height: 315
+      ,url: '/adminApi/loanTable' //数据接口
+      ,page: true //开启分页
+      ,limit: 10
+      ,cols: [[ //表头
+        {field: '_id', title: 'ID', width:220}
+        ,{field: 'userName', title: '姓名', width:100}
+        ,{field: 'userPhone', title: '电话', width:140}
+        ,{field: 'money', title: '借款金额', width:100} 
+        ,{field: 'term', title: '分期数', width: 80}
+        ,{field: 'refereeName', title: '推荐人姓名', width: 100}
+        ,{field: 'refereePhone', title: '推荐人电话', width: 140}
+        ,{field: 'status', title: '审核状态', width: 100, templet: '#statusTpl'}
+        ,{title: '操作', fixed: 'right', width:200, align:'center', toolbar: '#toolbar'}
+      ]]
+    }); 
+
+    //监听表格操作
+    table.on('tool(loanTable)', function(obj){
+      var data = obj.data;
+      var layEvent = obj.event;
+      var tr = obj.tr;
+
+      if(layEvent == 'check'){
+        console.log('check')
+      }else if(layEvent == 'delete'){
+        layer.confirm('真的删除么?', function(index){
+          obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+          layer.close(index);
+          //向服务端发送删除指令
+          tableIns.reload({
+            url: '/adminApi/deleteLoan',
+            method: 'post',
+            where: data
+          });
+        });
+      }
+    });
+  });
+</script>

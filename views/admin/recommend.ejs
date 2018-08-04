@@ -1,0 +1,111 @@
+<%- contentFor('style') %>
+<style>
+  body{
+    padding: 20px 30px;
+  }
+</style>
+
+<%- contentFor('content') %>
+<table id="recommend" lay-filter="recommendTable"></table>
+
+<script type="text/html" id="toolbar">
+  <a class="layui-btn layui-btn-sm" lay-event="check" style="height:28px;line-height:28px;">审核</a>
+  <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete" style="height:28px;line-height:28px;">删除</a>
+</script>
+
+<script type="text/html" id="recStatusTpl">
+  <div class="layui-table-cell laytable-cell-1-status">{{d.recStatus==0?'待审核':(d.recStatus==1?'审核失败':'审核成功')}}</div>
+</script>
+
+<%- contentFor('script') %>
+<form class="layui-form" style="display: none;padding-right:30px;" id="checkForm">
+  <div class="layui-form-item">
+    <label class="layui-form-label">审核状态:</label>
+    <div class="layui-input-block">
+      <input type="radio" name="recStatus" value="1" title="审核失败">
+      <input type="radio" name="recStatus" value="2" title="审核成功" checked>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">审核原因:</label>
+    <div class="layui-input-block">
+      <textarea name="reason" required placeholder="请输入内容" class="layui-textarea"></textarea>
+    </div>
+  </div>
+</form>
+<script>
+  layui.use('table', function(){
+    var table = layui.table;
+    var $ = layui.$;
+    var layer = layui.layer;
+    
+    //表格初始化
+    var tableIns = table.render({
+      elem: '#recommend'
+      ,method: 'post'
+      ,height: 315
+      ,url: '/adminApi/recommendTable' //数据接口
+      ,page: true //开启分页
+      ,limit: 10
+      ,cols: [[ //表头
+        {field: '_id', title: 'ID', width:240}
+        ,{field: 'recName', title: '推荐人姓名', width: 120}
+        ,{field: 'recPhone', title: '推荐人电话', width: 160}
+        ,{field: 'money', title: '借款金额', width:120} 
+        ,{field: 'term', title: '分期数', width: 100}
+        ,{field: 'recStatus', title: '审核状态', width: 120, templet: '#recStatusTpl'}
+        ,{title: '操作', fixed: 'right', width:218, align:'center', toolbar: '#toolbar'}
+      ]]
+    }); 
+
+    //监听表格操作
+    table.on('tool(recommendTable)', function(obj){
+      var data = obj.data;
+      var layEvent = obj.event;
+      var tr = obj.tr;
+      var check = $('#checkForm input, #checkForm textarea');
+
+      if(layEvent == 'check'){
+        layer.open({
+          type: 1,
+          title: '审核',
+          content: $('#checkForm'),
+          area: ['600px','280px'],
+          btn: ['提交','取消'],
+          yes: function(index){
+            var form = check.serializeJson();
+            form._id = data._id;
+            if(form.recStatus == '1'&&form.reason == ''){
+              layer.msg('请填写审核失败原因！');
+              return;
+            }
+            $.ajax({
+              url: '/adminApi/checkRecommend',
+              type: 'post',
+              data: form,
+              success: function(res){
+                if(res.code == 0){
+                  layer.close(index);
+                  obj.update(form);
+                }else{
+                  layer.msg(res.message);
+                }
+              }
+            });
+          }
+        });
+      }else if(layEvent == 'delete'){
+        layer.confirm('真的删除么?', function(index){
+          obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+          layer.close(index);
+          //向服务端发送删除指令
+          tableIns.reload({
+            url: '/adminApi/deleteRecommend',
+            method: 'post',
+            where: data
+          });
+        });
+      }
+    });
+  });
+</script>
