@@ -71,7 +71,7 @@ router.post('/recommendTable', function(req, res, next){
   }
   var page = parseInt(req.body.page);
   var limit = parseInt(req.body.limit);
-  recommendModel.find({}).sort({status: 1}).skip((page-1)*limit).limit(limit).exec(function(err, doc){
+  recommendModel.find({}).sort({recStatus: 1}).skip((page-1)*limit).limit(limit).exec(function(err, doc){
     if(err){
       res.send(err);
     }else{
@@ -121,7 +121,7 @@ router.post('/checkRecommend', function(req, res, next){
     message: ''
   }
   var _id = req.body._id;
-  var recStatus = req.body.recStatus;
+  var recStatus = parseInt(req.body.recStatus);
   var reason = req.body.reason;
   recommendModel.updateOne({_id: _id}, {recStatus: recStatus, reason: reason}, function(err, doc){
     if(err){
@@ -144,7 +144,7 @@ router.post('/feedbackTable', function(req, res, next){
   }
   var page = parseInt(req.body.page);
   var limit = parseInt(req.body.limit);
-  feedbackModel.find({}).sort({status: 1}).skip((page-1)*limit).limit(limit).exec(function(err, doc){
+  feedbackModel.find({}).skip((page-1)*limit).limit(limit).exec(function(err, doc){
     if(err){
       res.send(err);
     }else{
