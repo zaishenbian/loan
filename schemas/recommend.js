@@ -4,6 +4,10 @@ var Schemas = mongoose.Schema;
 var recommendSchemas = new Schemas({
     //openId
     openId: String,
+    //姓名
+    userName: String,
+    //电话
+    userPhone: String,
     //被推荐人姓名
     recName: String,
     //被推荐人手机号

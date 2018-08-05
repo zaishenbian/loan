@@ -3,12 +3,24 @@
   body{
     padding: 20px 30px;
   }
+  #recommendsBox{
+    padding: 30px;
+  }
+  #recommendsBox th,#recommendsBox td{
+    border: 1px solid grey;
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: normal;
+  }
 </style>
 
 <%- contentFor('content') %>
 <table id="loan" lay-filter="loanTable"></table>
 
 <script type="text/html" id="toolbar">
+  <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="recommends" style="height:28px;line-height:28px;">推荐人</a>
   <a class="layui-btn layui-btn-sm" lay-event="check" style="height:28px;line-height:28px;">审核</a>
   <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete" style="height:28px;line-height:28px;">删除</a>
 </script>
@@ -18,6 +30,17 @@
 </script>
 
 <%- contentFor('script') %>
+<div id="recommendsBox" style="display: none;">
+  <table id="recommends" border="1">
+    <thead>
+      <tr>
+        <th width="150">推荐人姓名</th>
+        <th width="200">推荐人电话</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 <script>
   layui.use('table', function(){
     var table = layui.table;
@@ -40,7 +63,7 @@
         ,{field: 'refereeName', title: '推荐人姓名', width: 100}
         ,{field: 'refereePhone', title: '推荐人电话', width: 140}
         ,{field: 'status', title: '审核状态', width: 100, templet: '#statusTpl'}
-        ,{title: '操作', fixed: 'right', width:200, align:'center', toolbar: '#toolbar'}
+        ,{title: '操作', fixed: 'right', width:280, align:'center', toolbar: '#toolbar'}
       ]]
     }); 
 
@@ -51,7 +74,7 @@
       var tr = obj.tr;
 
       if(layEvent == 'check'){
-        console.log('check')
+        location.href = '/adminApi/getLoanDetail?_id='+data._id;
       }else if(layEvent == 'delete'){
         layer.confirm('真的删除么?', function(index){
           obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
@@ -62,6 +85,43 @@
             method: 'post',
             where: data
           });
+        });
+      }else if(layEvent == 'recommends'){
+        layer.open({
+          type: 1,
+          title: '推荐人',
+          area: ['400px','280px'],
+          content: $('#recommendsBox'),
+          btn: ['确定'],
+          success: function(){
+            var $recommends = $('#recommends tbody');
+            $.ajax({
+              url: '/adminApi/recommends',
+              type: 'post',
+              data: data,
+              success: function(res){
+                if(res.code == 0){
+                  var html = '';
+                  if(res.data.length == 0){
+                    html = '暂无数据'
+                  }else{
+                    res.data.forEach(ele => {
+                      html += `
+                        <tr>
+                          <td>${ele.userName}</td>
+                          <td>${ele.userPhone}</td>
+                        </tr>
+                      `;
+                    });
+                  }
+                  console.log(html)
+                  $recommends.html(html);
+                }else{
+                  layer.msg(res.message);
+                }
+              }
+            });
+          }
         });
       }
     });

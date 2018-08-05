@@ -1,0 +1,128 @@
+<%- contentFor('style') %>
+<style>
+  body{
+    padding: 20px 30px;
+  }
+  .layui-input-inline span{
+    display: inline-block;
+    line-height: 36px;
+  }
+  .layui-input-inline img{
+    width:480px;
+    height: 270px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+</style>
+
+<%- contentFor('content') %>
+<form class="layui-form" action="" id="checkForm">
+  <div class="layui-form-item">
+    <label class="layui-form-label">ID:</label>
+    <div class="layui-input-inline">
+      <span><%= detail._id %></span>
+      <input type="text" name="_id" value="<%= detail._id %>" class="layui-input" style="display: none;">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">姓名:</label>
+    <div class="layui-input-inline">
+      <span><%= detail.userName %></span>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">电话:</label>
+    <div class="layui-input-inline">
+      <span><%= detail.userPhone %></span>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">借款金额:</label>
+    <div class="layui-input-inline">
+      <span><%= detail.money %></span>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">分期数:</label>
+    <div class="layui-input-inline">
+      <span><%= detail.term %></span>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">身份证正面:</label>
+    <div class="layui-input-inline">
+      <img src="<%= detail.imagePositive %>" alt="身份证正面照片">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">身份证反面:</label>
+    <div class="layui-input-inline">
+        <img src="<%= detail.imageReverse %>" alt="身份证反面照片">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">手持身份证:</label>
+    <div class="layui-input-inline">
+        <img src="<%= detail.imageTogether %>" alt="手持身份证照片">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">审核状态:</label>
+    <div class="layui-input-block">
+      <input type="radio" name="status" value="1" title="审核失败" <%= detail.status==1?'checked':'' %>>
+      <input type="radio" name="status" value="2" title="审核成功" <%= detail.status==1?'':'checked' %>>
+    </div>
+  </div>
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">审核原因:</label>
+    <div class="layui-input-block">
+      <textarea name="reason" placeholder="请输入内容" class="layui-textarea"><%= detail.reason %></textarea>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <a class="layui-btn submit">立即提交</a>
+      <a href="/admin/loan" class="layui-btn layui-btn-primary" style="display: inline-block;">返回</a>
+    </div>
+  </div>
+</form>
+
+<%- contentFor('script') %>
+<script>
+  layui.use('form', function(){
+    var form = layui.form;
+    var layer = layui.layer;
+    var check = $('#checkForm input, #checkForm textarea');
+
+    //图片查看
+    var img = $('.layui-input-inline img');
+    img.click('click', function(event){
+      var imgBox = $(event.target).parent('.layui-input-inline');
+      layer.photos({
+        photos: imgBox
+      })
+    })
+
+    $('.submit').on('click', function(event){
+      var data = check.serializeJson();
+      if(data.status == '1'&&data.reason == ''){
+        layer.msg('请填写审核失败原因！');
+        return;
+      }else{
+        $.ajax({
+          url: '/adminApi/checkLoan',
+          type: 'post',
+          data: data,
+          success: function(res){
+            if(res.code == 0){
+              location.href = '/admin/loan';
+            }else{
+              layer.msg(res.message);
+            }
+          }
+        })
+      }
+    })
+  
+  });
+</script>

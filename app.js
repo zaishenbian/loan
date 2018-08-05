@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: '2018',
-  cookie: { maxAge: 1000*60*60 },
+  cookie: { maxAge: 1000*60*60*24*365 },
   name: 'cherishSmile',
   resave: true,
   saveUninitialized: true

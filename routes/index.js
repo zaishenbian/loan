@@ -7,7 +7,12 @@ var pageUrl = config.pageUrl;
 
 /* 首页路由 */
 router.get('/', function(req, res, next){
-  res.render('admin/index', { layout: 'admin/layout' });
+  console.log('当前Session',req.session.user)
+  if(req.session.user){
+    res.render('admin/index', { layout: 'admin/layout' });
+  }else{
+    res.render('admin/login', { layout: 'admin/layout' });
+  }
 });
 
 //欢迎页面
